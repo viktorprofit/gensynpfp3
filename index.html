@@ -5,27 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>PFP Item Forge</title>
   <style>
-    /* ===== FONTS (optional local) ===== */
-    @font-face{
-      font-family:"Mondwest";
-      src: url("fonts/Mondwest.woff2") format("woff2"),
-           url("fonts/Mondwest.woff") format("woff");
-      font-weight:400; font-style:normal; font-display:swap;
-    }
-    @font-face{
-      font-family:"Aux Mono";
-      src: url("fonts/AuxMono-Regular.woff2") format("woff2"),
-           url("fonts/AuxMono-Regular.woff") format("woff");
-      font-weight:400; font-style:normal; font-display:swap;
-    }
-    @font-face{
-      font-family:"SimplonMono-Light";
-      src: url("fonts/SimplonMono-Light.woff2") format("woff2"),
-           url("fonts/SimplonMono-Light.woff") format("woff");
-      font-weight:300; font-style:normal; font-display:swap;
-    }
-
-    /* ===== THEME ===== */
     :root{
       --bg:#0a0a0a;
       --panel:#121212;
@@ -38,20 +17,18 @@
       --deep-brown:#230800;
     }
 
-    /* ===== BASE ===== */
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family:"Mondwest",system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
       color:var(--text);
       background:url('items/background.png') no-repeat center center fixed;
       background-size:cover;
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
     .wrap{
-      max-width:1280px;
+      max-width:1100px;
       margin:28px auto;
       padding:0 16px;
       display:grid;
@@ -60,96 +37,124 @@
     }
     @media(min-width:1100px){.wrap{grid-template-columns:1.2fr .9fr}}
 
-    /* ===== STAGE / CANVAS ===== */
+    /* ==== FRAME / CANVAS ==== */
     .stage{
-      position:relative;background:linear-gradient(180deg,#111,#0f0f0f);
-      border:1px solid var(--line);border-radius:16px;padding:18px;
+      position:relative;
+      background:linear-gradient(180deg,#111,#0f0f0f);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
       box-shadow:0 30px 80px rgba(0,0,0,.55);
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
-    .stage:before,.stage:after{content:"";position:absolute;inset:8px;border:2px solid rgba(250,215,209,.35);border-radius:12px;pointer-events:none}
-    .stage:after{inset:16px;border-color:rgba(250,215,209,.18)}
-    .scan{position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.5;animation:scan 3.6s linear infinite}
-    @keyframes scan{0%{transform:translateY(0)}100%{transform:translateY(640px)}}
 
-    /* ===== PANELS ===== */
-    .panel{background:linear-gradient(180deg,#121212,#111);border:1px solid var(--line);border-radius:16px;padding:16px}
+    canvas{
+      width:85%;
+      background:#0a0a0a;
+      border:1px dashed rgba(250,215,209,.35);
+      border-radius:12px;
+      display:block;
+    }
+
+    /* ==== PANELS ==== */
+    .panel{
+      background:linear-gradient(180deg,#121212,#111);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      font-size:0.95em;
+    }
     .panel + .panel{margin-top:10px}
-    .title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:.01em}
+
+    .title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:.01em}
     .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 3px rgba(250,215,209,.25)}
-    .muted{color:var(--muted);font-size:12px;font-family:"Aux Mono","SimplonMono-Light",ui-monospace,monospace}
+    .muted{color:var(--muted);font-size:12px}
 
-    /* ===== BUTTONS ===== */
+    /* ==== BUTTONS ==== */
     .btn{
-      appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;
-      background:#1a1f2e;color:var(--text);border:1px solid var(--line);
-      border-radius:12px;padding:14px 16px;
-      font-family:"Mondwest",system-ui,sans-serif;font-weight:700;font-size:18px;
-      letter-spacing:.04em;text-transform:uppercase;
-      cursor:pointer;transition:filter .25s ease, box-shadow .25s ease, background .25s ease, transform .08s ease;
+      appearance:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+      background:#1a1f2e;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:12px 14px;
+      font-weight:600;
+      font-size:16px;
+      cursor:pointer;
+      transition:filter .25s ease,box-shadow .25s ease,background .25s ease,transform .08s ease;
     }
-    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;color:var(--deep-brown)}
-    .btn.primary:hover{background:linear-gradient(90deg,var(--accent-3),var(--accent));filter:brightness(1.03);box-shadow:0 8px 26px rgba(250,215,209,.20),0 0 0 1px rgba(250,215,209,.25) inset}
-    .btn:active{transform:translateY(1px)}
-    .btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(250,215,209,.35)}
+    .btn.primary{
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      border:0;
+      color:var(--deep-brown);
+    }
+    .btn.primary:hover{
+      background:linear-gradient(90deg,var(--accent-3),var(--accent));
+      filter:brightness(1.03);
+      box-shadow:0 8px 26px rgba(250,215,209,.20),0 0 0 1px rgba(250,215,209,.25) inset;
+    }
 
-    /* ===== THUMBNAILS (clean highlight frame) ===== */
-    .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    /* ==== THUMBS ==== */
+    .thumbs{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:8px;
+    }
     .thumb{
-      background:#141414;border:2px solid var(--line);border-radius:12px;
-      display:flex;align-items:center;justify-content:center;min-height:86px;cursor:pointer;
-      transition:border-color .25s ease, box-shadow .25s ease, background .25s ease;
+      background:#141414;
+      border:2px solid var(--line);
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:70px;
+      cursor:pointer;
+      transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
     }
     .thumb img{max-width:90%;object-fit:contain}
     .thumb:hover{border-color:var(--accent);box-shadow:0 0 10px 2px rgba(250,215,209,0.25);background:#151515}
     .thumb.active{border-color:var(--accent);box-shadow:0 0 14px 3px rgba(250,215,209,0.4)}
 
-    /* ===== CANVAS ===== */
-    canvas{width:100%;background:#0a0a0a;border:1px dashed rgba(250,215,209,.35);border-radius:12px}
-
-    /* ===== CONTROLS ===== */
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    /* ==== CONTROLS ==== */
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
     input[type="range"]{width:100%;accent-color:var(--accent)}
-    label{display:block;margin:6px 0;color:var(--muted);font-family:"Aux Mono","SimplonMono-Light",ui-monospace,monospace}
-    .bar{display:flex;gap:10px;margin-top:14px}
-
-    /* ===== SCALE FIX: shrink entire app by ~10% ===== */
-    html, body { height: 100%; }
-    .wrap{
-      transform: scale(0.9);
-      transform-origin: top center;
-      width: calc(100% / 0.9); /* компенсуємо scale, щоб сітка не «вужчала» */
-    }
+    label{display:block;margin:6px 0;color:var(--muted)}
+    .bar{display:flex;gap:10px;margin-top:10px}
   </style>
 </head>
 <body>
   <main class="wrap">
     <section class="stage" aria-label="Preview Stage">
-      <div class="scan"></div>
-      <canvas id="c" width="900" height="900" aria-label="PFP canvas"></canvas>
+      <canvas id="c" width="900" height="900"></canvas>
     </section>
 
     <section>
       <div class="panel">
         <div class="title"><span class="dot"></span> Upload PFP</div>
-        <p class="muted" style="margin:8px 0 12px">PNG / JPG / WEBP — we render locally in your browser.</p>
+        <p class="muted" style="margin:8px 0 12px">PNG / JPG / WEBP — rendered locally.</p>
         <input id="photo" type="file" accept="image/png,image/jpeg,image/webp" style="display:none"/>
         <button id="pickPhoto" class="btn primary">⬆ Select PFP File</button>
       </div>
 
       <div class="panel">
         <div class="title"><span class="dot"></span> Select Item</div>
-
-        <!-- Thumbnails (embedded images) -->
         <div class="thumbs" id="thumbs">
-          <button class="thumb" data-mask="cap1" title="Cap A"><img src="items/cap-a.png" alt="Cap A"/></button>
-          <button class="thumb" data-mask="cap2" title="Cap B"><img src="items/cap-b.png" alt="Cap B"/></button>
-          <button class="thumb" data-mask="bucket" title="Bucket Hat"><img src="items/bucket-hat.png" alt="Bucket Hat"/></button>
-          <button class="thumb" data-mask="cap3" title="Cap C"><img src="items/cap-c.png" alt="Cap C"/></button>
-          <button class="thumb" data-mask="cap4" title="Cap D"><img src="items/cap-d.png" alt="Cap D"/></button>
-          <button class="thumb" data-mask="cap5" title="Cap E"><img src="items/cap-e.png" alt="Cap E"/></button>
+          <button class="thumb" data-mask="cap1"><img src="items/cap-a.png" alt="Cap A"/></button>
+          <button class="thumb" data-mask="cap2"><img src="items/cap-b.png" alt="Cap B"/></button>
+          <button class="thumb" data-mask="bucket"><img src="items/bucket-hat.png" alt="Bucket Hat"/></button>
+          <button class="thumb" data-mask="cap3"><img src="items/cap-c.png" alt="Cap C"/></button>
+          <button class="thumb" data-mask="cap4"><img src="items/cap-d.png" alt="Cap D"/></button>
+          <button class="thumb" data-mask="cap5"><img src="items/cap-e.png" alt="Cap E"/></button>
         </div>
 
-        <!-- Controls -->
         <div class="row">
           <div>
             <label for="scale">Scale</label>
@@ -165,69 +170,30 @@
             <label for="opacity">Opacity</label>
             <input id="opacity" type="range" min="0" max="1" value="1" step="0.01"/>
           </div>
-          <div>
-            <label for="exportSize">Export Size</label>
-            <select id="exportSize" class="input">
-              <option value="orig">Original</option>
-              <option value="512">512 × 512</option>
-              <option value="1024">1024 × 1024</option>
-            </select>
-          </div>
         </div>
 
         <div class="bar">
           <button id="download" class="btn primary">⬇ Download PNG</button>
-          <button id="reset" class="btn">↻ Reset System</button>
+          <button id="reset" class="btn">↻ Reset</button>
         </div>
-
-        <p class="muted" style="margin-top:8px">
-          Tip: drag the item on canvas. Arrows move it precisely; [ / ] rotate; - / + scale.
-        </p>
       </div>
     </section>
   </main>
 
   <script>
-    // --- DOM refs
-    const canvas = document.getElementById('c');
-    const ctx = canvas.getContext('2d');
-    const photoInput = document.getElementById('photo');
-    const pickPhotoBtn = document.getElementById('pickPhoto');
-    const thumbs = document.getElementById('thumbs');
-    const scaleInput = document.getElementById('scale');
-    const rotateInput = document.getElementById('rotate');
-    const opacityInput = document.getElementById('opacity');
-    const exportSizeSel = document.getElementById('exportSize');
-    const resetBtn = document.getElementById('reset');
-    const dlBtn = document.getElementById('download');
+    const canvas=document.getElementById('c');
+    const ctx=canvas.getContext('2d');
+    const photoInput=document.getElementById('photo');
+    const pickPhotoBtn=document.getElementById('pickPhoto');
+    const thumbs=document.getElementById('thumbs');
+    const scaleInput=document.getElementById('scale');
+    const rotateInput=document.getElementById('rotate');
+    const opacityInput=document.getElementById('opacity');
+    const resetBtn=document.getElementById('reset');
+    const dlBtn=document.getElementById('download');
 
-    pickPhotoBtn.addEventListener('click', () => photoInput.click());
-
-    // --- State
-    const state = { bgImg:null, capImg:null, cap:{x:0,y:0,w:0,h:0,scale:1,rot:0,alpha:1} };
-
-    // --- Helpers
-    function loadImageFromFile(file){
-      return new Promise((resolve, reject)=>{
-        const reader = new FileReader();
-        reader.onload = ()=>{
-          const img = new Image();
-          img.onload = ()=>resolve(img);
-          img.onerror = ()=>reject(new Error('decode failed'));
-          img.src = reader.result;
-        };
-        reader.onerror = ()=> reject(new Error('read failed'));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function fitCanvasToImage(img){
-      const MAX=1400;let w=img.naturalWidth,h=img.naturalHeight;
-      const k=Math.min(1,MAX/Math.max(w,h));
-      canvas.width=Math.round(w*k);canvas.height=Math.round(h*k);
-    }
-
-    // Items (must exist in /items/)
+    pickPhotoBtn.addEventListener('click',()=>photoInput.click());
+    const state={bgImg:null,capImg:null,cap:{x:0,y:0,w:0,h:0,scale:1,rot:0,alpha:1}};
     const itemPaths={
       cap1:'items/cap-a.png',
       cap2:'items/cap-b.png',
@@ -236,15 +202,31 @@
       cap4:'items/cap-d.png',
       cap5:'items/cap-e.png'
     };
-    const presets={}; // preloaded images
-    Object.entries(itemPaths).forEach(([k,src])=>{
-      const i=new Image(); i.src=src; presets[k]=i;
-    });
+    const presets={};
+    Object.entries(itemPaths).forEach(([k,src])=>{const i=new Image();i.src=src;presets[k]=i;});
 
+    function loadImageFromFile(file){
+      return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>{
+          const img=new Image();
+          img.onload=()=>resolve(img);
+          img.onerror=()=>reject(new Error('decode failed'));
+          img.src=reader.result;
+        };
+        reader.onerror=()=>reject(new Error('read failed'));
+        reader.readAsDataURL(file);
+      });
+    }
+    function fitCanvasToImage(img){
+      const MAX=1400;let w=img.naturalWidth,h=img.naturalHeight;
+      const k=Math.min(1,MAX/Math.max(w,h));
+      canvas.width=Math.round(w*k);canvas.height=Math.round(h*k);
+    }
     function centerCap(imgLike){
       const iw=imgLike.width||imgLike.naturalWidth;
       const ih=imgLike.height||imgLike.naturalHeight;
-      state.cap.w=iw; state.cap.h=ih;
+      state.cap.w=iw;state.cap.h=ih;
       state.cap.scale=Math.min(1,canvas.width/iw*0.5);
       state.cap.rot=0;
       state.cap.x=canvas.width/2-(iw*state.cap.scale)/2;
@@ -252,131 +234,45 @@
       scaleInput.value=String(state.cap.scale);
       rotateInput.value=String(state.cap.rot);
     }
-
     function render(){
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      // background
-      if(state.bgImg){ ctx.drawImage(state.bgImg,0,0,canvas.width,canvas.height); }
-      else { ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,canvas.width,canvas.height); }
-
-      // item
-      if (state.capImg) {
+      if(state.bgImg){ctx.drawImage(state.bgImg,0,0,canvas.width,canvas.height);}
+      else{ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,canvas.width,canvas.height);}
+      if(state.capImg){
         const {x,y,w,h,scale,rot,alpha}=state.cap;
-        const cw=w*scale, ch=h*scale;
-        const cx=x+cw/2, cy=y+ch/2;
-        ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot*Math.PI/180);
-        ctx.globalAlpha=alpha;
+        const cw=w*scale,ch=h*scale;
+        const cx=x+cw/2,cy=y+ch/2;
+        ctx.save();ctx.translate(cx,cy);ctx.rotate(rot*Math.PI/180);ctx.globalAlpha=alpha;
         ctx.drawImage(state.capImg,-cw/2,-ch/2,cw,ch);
-        ctx.restore(); ctx.globalAlpha=1;
+        ctx.restore();ctx.globalAlpha=1;
       }
     }
-
-    // --- Dragging
-    let dragging=false; let dragOff={x:0,y:0};
-    function hitCap(mx,my){
-      if(!state.capImg) return false;
-      const {x,y,w,h,scale,rot}=state.cap;
-      const cw=w*scale, ch=h*scale; const cx=x+cw/2, cy=y+ch/2;
-      const dx=mx-cx, dy=my-cy; const ang=-rot*Math.PI/180;
-      const rx=dx*Math.cos(ang)-dy*Math.sin(ang);
-      const ry=dx*Math.sin(ang)+dy*Math.cos(ang);
-      return (rx>=-cw/2 && rx<=cw/2 && ry>=-ch/2 && ry<=ch/2);
-    }
-    canvas.addEventListener('mousedown',e=>{
-      const r=canvas.getBoundingClientRect();
-      const mx=(e.clientX-r.left)*(canvas.width/r.width);
-      const my=(e.clientY-r.top)*(canvas.height/r.height);
-      if(hitCap(mx,my)){ dragging=true; dragOff.x=mx-state.cap.x; dragOff.y=my-state.cap.y; }
-    });
-    window.addEventListener('mousemove',e=>{
-      if(!dragging) return;
-      const r=canvas.getBoundingClientRect();
-      const mx=(e.clientX-r.left)*(canvas.width/r.width);
-      const my=(e.clientY-r.top)*(canvas.height/r.height);
-      state.cap.x=mx-dragOff.x; state.cap.y=my-dragOff.y; render();
-    });
-    window.addEventListener('mouseup',()=> dragging=false);
-
-    // --- Controls
-    scaleInput.addEventListener('input',()=>{ state.cap.scale=parseFloat(scaleInput.value||'1'); render(); });
-    rotateInput.addEventListener('input',()=>{ state.cap.rot=parseFloat(rotateInput.value||'0'); render(); });
-    opacityInput.addEventListener('input',()=>{ state.cap.alpha=parseFloat(opacityInput.value||'1'); render(); });
-
-    // --- Reset
-    resetBtn.addEventListener('click', ()=>{
-      state.capImg = null;
-      document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));
-      render();
-    });
-
-    // --- Download (supports export size)
-    dlBtn.addEventListener('click',()=>{
-      const opt=exportSizeSel.value;
-      if(opt==='orig'){
-        const link=document.createElement('a');
-        link.download='pfp.png';
-        link.href=canvas.toDataURL('image/png');
-        link.click(); return;
-      }
-      const size=parseInt(opt,10);
-      const off=document.createElement('canvas'); off.width=size; off.height=size;
-      const g=off.getContext('2d');
-
-      if(state.bgImg){ g.drawImage(state.bgImg,0,0,size,size); } else { g.fillStyle='#0a0a0a'; g.fillRect(0,0,size,size); }
-
-      if (state.capImg) {
-        const kx=size/canvas.width, ky=size/canvas.height, k=Math.min(kx,ky);
-        const {x,y,w,h,scale,rot,alpha}=state.cap;
-        const cw=w*scale*k, ch=h*scale*k;
-        const cx=(x*k)+cw/2, cy=(y*k)+ch/2;
-        g.save(); g.translate(cx,cy); g.rotate(rot*Math.PI/180); g.globalAlpha=alpha;
-        g.drawImage(state.capImg, -cw/2, -ch/2, cw, ch);
-        g.restore(); g.globalAlpha=1;
-      }
-
-      const link=document.createElement('a');
-      link.download='pfp.png';
-      link.href=off.toDataURL('image/png');
-      link.click();
-    });
-
-    // --- Upload PFP
-    pickPhotoBtn.addEventListener('click', () => photoInput.click());
-    photoInput.addEventListener('change', async ()=>{
-      const f=photoInput.files?.[0]; if(!f) return;
+    photoInput.addEventListener('change',async()=>{
+      const f=photoInput.files?.[0];if(!f)return;
       try{
         const img=await loadImageFromFile(f);
-        state.bgImg=img; fitCanvasToImage(img); render();
-      }catch(e){ alert('Unsupported image format. Please upload PNG, JPG, or WebP.'); }
+        state.bgImg=img;fitCanvasToImage(img);render();
+      }catch(e){alert('Unsupported format.');}
     });
-
-    // --- Select item (from embedded thumbs)
     thumbs.addEventListener('click',e=>{
-      const box=e.target.closest('.thumb'); if(!box) return;
-      const key=box.getAttribute('data-mask'); if(!key) return;
-      state.capImg = presets[key];
+      const box=e.target.closest('.thumb');if(!box)return;
+      const key=box.getAttribute('data-mask');if(!key)return;
+      state.capImg=presets[key];
       centerCap(state.capImg);
       document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));
       box.classList.add('active');
       render();
     });
-
-    // --- Keyboard helpers
-    window.addEventListener('keydown',e=>{
-      const step=e.shiftKey?10:2; let changed=true;
-      if(e.key==='ArrowLeft') state.cap.x-=step;
-      else if(e.key==='ArrowRight') state.cap.x+=step;
-      else if(e.key==='ArrowUp') state.cap.y-=step;
-      else if(e.key==='ArrowDown') state.cap.y+=step;
-      else if(e.key===']') state.cap.rot+=1;
-      else if(e.key==='[') state.cap.rot-=1;
-      else if(e.key==='+'){ state.cap.scale=Math.min(3,state.cap.scale+0.02); scaleInput.value=state.cap.scale; }
-      else if(e.key==='-'){ state.cap.scale=Math.max(0.2,state.cap.scale-0.02); scaleInput.value=state.cap.scale; }
-      else changed=false;
-      if(changed){ e.preventDefault(); render(); }
+    scaleInput.addEventListener('input',()=>{state.cap.scale=parseFloat(scaleInput.value||'1');render();});
+    rotateInput.addEventListener('input',()=>{state.cap.rot=parseFloat(rotateInput.value||'0');render();});
+    opacityInput.addEventListener('input',()=>{state.cap.alpha=parseFloat(opacityInput.value||'1');render();});
+    resetBtn.addEventListener('click',()=>{state.capImg=null;document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));render();});
+    dlBtn.addEventListener('click',()=>{
+      const link=document.createElement('a');
+      link.download='pfp.png';
+      link.href=canvas.toDataURL('image/png');
+      link.click();
     });
-
-    // Initial render
     render();
   </script>
 </body>
