@@ -32,10 +32,6 @@
       place-items:center;
     }
 
-    body {
-  zoom: 0.9;
-}
-
     .wrap{
       width:100%;
       max-width:720px;
@@ -121,6 +117,18 @@
         0 2px 0 rgba(0,0,0,.35),
         0 8px 20px rgba(250,215,209,.12);
     }
+
+    .wrap{
+  transform: scale(0.9);
+  transform-origin: top center;
+  /* щоб після scale контент залишався по центру і не “втискався”,
+     розширимо логічну ширину контейнера навпаки */
+  width: calc(100% / 0.9);
+}
+
+/* тримаємо висоту сторінки адекватною */
+html, body { height: 100%; }
+    
   </style>
 </head>
 <body>
