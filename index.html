@@ -51,7 +51,7 @@
     }
 
     canvas{
-      width:85%;
+      width:100%;
       background:#0a0a0a;
       border:1px dashed rgba(250,215,209,.35);
       border-radius:12px;
@@ -63,8 +63,8 @@
       background:linear-gradient(180deg,#121212,#111);
       border:1px solid var(--line);
       border-radius:16px;
-      padding:12px;
-      font-size:0.95em;
+      padding:16px;
+      font-size:1em;
     }
     .panel + .panel{margin-top:10px}
 
@@ -105,7 +105,7 @@
     .thumbs{
       display:grid;
       grid-template-columns:repeat(3,1fr);
-      gap:8px;
+      gap:12px;
       margin-top:8px;
     }
     .thumb{
@@ -115,7 +115,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      min-height:70px;
+      min-height:86px;
       cursor:pointer;
       transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
     }
@@ -128,6 +128,12 @@
     input[type="range"]{width:100%;accent-color:var(--accent)}
     label{display:block;margin:6px 0;color:var(--muted)}
     .bar{display:flex;gap:10px;margin-top:10px}
+
+    /* ==== FORCE SCALE (гарантоване зменшення) ==== */
+    .stage > canvas{ width:85% !important; margin:0 auto !important; }
+    .panel{ padding:12px !important; font-size:.95em !important; }
+    .thumbs{ gap:8px !important; }
+    .thumb{ min-height:70px !important; }
   </style>
 </head>
 <body>
@@ -193,6 +199,7 @@
     const dlBtn=document.getElementById('download');
 
     pickPhotoBtn.addEventListener('click',()=>photoInput.click());
+
     const state={bgImg:null,capImg:null,cap:{x:0,y:0,w:0,h:0,scale:1,rot:0,alpha:1}};
     const itemPaths={
       cap1:'items/cap-a.png',
