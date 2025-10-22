@@ -1,190 +1,383 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gensyn PFP — Ready</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PFP Item Forge</title>
   <style>
-    /* Optional: локальні шрифти, якщо покладеш їх у /fonts */
+    /* ===== FONTS (optional local) ===== */
     @font-face{
-      font-family: "Mondwest";
+      font-family:"Mondwest";
       src: url("fonts/Mondwest.woff2") format("woff2"),
            url("fonts/Mondwest.woff") format("woff");
-      font-weight: 400; font-style: normal; font-display: swap;
+      font-weight:400; font-style:normal; font-display:swap;
+    }
+    @font-face{
+      font-family:"Aux Mono";
+      src: url("fonts/AuxMono-Regular.woff2") format("woff2"),
+           url("fonts/AuxMono-Regular.woff") format("woff");
+      font-weight:400; font-style:normal; font-display:swap;
+    }
+    @font-face{
+      font-family:"SimplonMono-Light";
+      src: url("fonts/SimplonMono-Light.woff2") format("woff2"),
+           url("fonts/SimplonMono-Light.woff") format("woff");
+      font-weight:300; font-style:normal; font-display:swap;
     }
 
+    /* ===== THEME ===== */
     :root{
-      --deep-brown:#230800;
+      --bg:#0a0a0a;
+      --panel:#121212;
+      --line:#3a1a12;
       --accent:#fad7d1;
-      --accent-strong:#ffc9be;
+      --accent-2:#f3c2b9;
+      --accent-3:#ffc9be;
       --text:#ffffff;
+      --muted:#d7b9b3;
+      --deep-brown:#230800;
     }
 
+    /* ===== BASE ===== */
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
+      font-family:"Mondwest",system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+      color:var(--text);
       background:url('items/background.png') no-repeat center center fixed;
       background-size:cover;
-      color:var(--text);
-      font-family:"Mondwest", system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-      display:grid;
-      place-items:center;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
     .wrap{
-      width:100%;
-      max-width:720px;
-      padding:24px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:24px;
-      text-align:center;
-    }
-
-    /* PFP frame */
-    .frame{
-      width:min(90vw,480px);
-      aspect-ratio:1/1;
-      border-radius:16px;
-      background:rgba(35,8,0,0.85);
-      border:2px solid rgba(250,215,209,.45);
-      box-shadow:
-        0 0 0 3px rgba(250,215,209,.15) inset,
-        0 14px 40px rgba(0,0,0,.45),
-        0 0 28px rgba(250,215,209,.28);
-      padding:12px;
-      position:relative;
+      max-width:1280px;
+      margin:28px auto;
+      padding:0 16px;
       display:grid;
-      place-items:center;
-      cursor:pointer;
-      transition:border-color .25s ease, box-shadow .25s ease;
-      user-select:none;
-      -webkit-backdrop-filter: blur(4px);
-      backdrop-filter: blur(4px);
+      gap:20px;
+      grid-template-columns:1fr;
     }
-    .frame:hover,
-    .frame.hover{
-      border-color:var(--accent);
-      box-shadow:
-        0 0 0 3px rgba(250,215,209,.25) inset,
-        0 0 22px rgba(250,215,209,.35);
+    @media(min-width:1100px){.wrap{grid-template-columns:1.2fr .9fr}}
+
+    /* ===== STAGE / CANVAS ===== */
+    .stage{
+      position:relative;background:linear-gradient(180deg,#111,#0f0f0f);
+      border:1px solid var(--line);border-radius:16px;padding:18px;
+      box-shadow:0 30px 80px rgba(0,0,0,.55);
     }
+    .stage:before,.stage:after{content:"";position:absolute;inset:8px;border:2px solid rgba(250,215,209,.35);border-radius:12px;pointer-events:none}
+    .stage:after{inset:16px;border-color:rgba(250,215,209,.18)}
+    .scan{position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.5;animation:scan 3.6s linear infinite}
+    @keyframes scan{0%{transform:translateY(0)}100%{transform:translateY(640px)}}
 
-    .pfp{
-      width:100%;
-      height:100%;
-      border-radius:12px;
-      object-fit:cover;
-      display:block;
-      background:linear-gradient(180deg,#1b0700,#0f0300);
-      border:1px dashed rgba(250,215,209,.35);
-      opacity:0;
-      transition:opacity .25s ease;
+    /* ===== PANELS ===== */
+    .panel{background:linear-gradient(180deg,#121212,#111);border:1px solid var(--line);border-radius:16px;padding:16px}
+    .panel + .panel{margin-top:10px}
+    .title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:.01em}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 3px rgba(250,215,209,.25)}
+    .muted{color:var(--muted);font-size:12px;font-family:"Aux Mono","SimplonMono-Light",ui-monospace,monospace}
+
+    /* ===== BUTTONS ===== */
+    .btn{
+      appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;
+      background:#1a1f2e;color:var(--text);border:1px solid var(--line);
+      border-radius:12px;padding:14px 16px;
+      font-family:"Mondwest",system-ui,sans-serif;font-weight:700;font-size:18px;
+      letter-spacing:.04em;text-transform:uppercase;
+      cursor:pointer;transition:filter .25s ease, box-shadow .25s ease, background .25s ease, transform .08s ease;
     }
-    .pfp.loaded{ opacity:1 }
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;color:var(--deep-brown)}
+    .btn.primary:hover{background:linear-gradient(90deg,var(--accent-3),var(--accent));filter:brightness(1.03);box-shadow:0 8px 26px rgba(250,215,209,.20),0 0 0 1px rgba(250,215,209,.25) inset}
+    .btn:active{transform:translateY(1px)}
+    .btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(250,215,209,.35)}
 
-    input[type="file"]{display:none}
-
-    /* Headline capsule */
-    .headline{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:14px 22px;
-      background: rgba(20, 5, 0, 0.65);
-      border: 2px solid rgba(250,215,209,.55);
-      box-shadow:
-        0 0 0 3px rgba(250,215,209,.12) inset,
-        0 10px 34px rgba(0,0,0,.45),
-        0 0 22px rgba(250,215,209,.28);
-      -webkit-backdrop-filter: blur(6px);
-      backdrop-filter: blur(6px);
+    /* ===== THUMBNAILS (clean highlight frame) ===== */
+    .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .thumb{
+      background:#141414;border:2px solid var(--line);border-radius:12px;
+      display:flex;align-items:center;justify-content:center;min-height:86px;cursor:pointer;
+      transition:border-color .25s ease, box-shadow .25s ease, background .25s ease;
     }
+    .thumb img{max-width:90%;object-fit:contain}
+    .thumb:hover{border-color:var(--accent);box-shadow:0 0 10px 2px rgba(250,215,209,0.25);background:#151515}
+    .thumb.active{border-color:var(--accent);box-shadow:0 0 14px 3px rgba(250,215,209,0.4)}
 
-    .headline h1{
-      margin:0;
-      font-weight:800;
-      font-size: clamp(22px, 3.6vw, 36px);
-      letter-spacing:.02em;
-      line-height:1.15;
-      color:var(--text);
-      /* акуратний штрих + світла тінь для кращої читабельності */
-      -webkit-text-stroke: 0.6px rgba(0,0,0,.35);
-      text-shadow:
-        0 2px 0 rgba(0,0,0,.35),
-        0 8px 20px rgba(250,215,209,.12);
-    }
+    /* ===== CANVAS ===== */
+    canvas{width:100%;background:#0a0a0a;border:1px dashed rgba(250,215,209,.35);border-radius:12px}
 
+    /* ===== CONTROLS ===== */
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    input[type="range"]{width:100%;accent-color:var(--accent)}
+    label{display:block;margin:6px 0;color:var(--muted);font-family:"Aux Mono","SimplonMono-Light",ui-monospace,monospace}
+    .bar{display:flex;gap:10px;margin-top:14px}
+
+    /* ===== SCALE FIX: shrink entire app by ~10% ===== */
+    html, body { height: 100%; }
     .wrap{
-  transform: scale(0.9);
-  transform-origin: top center;
-  /* щоб після scale контент залишався по центру і не “втискався”,
-     розширимо логічну ширину контейнера навпаки */
-  width: calc(100% / 0.9);
-}
-
-/* тримаємо висоту сторінки адекватною */
-html, body { height: 100%; }
-    
+      transform: scale(0.9);
+      transform-origin: top center;
+      width: calc(100% / 0.9); /* компенсуємо scale, щоб сітка не «вужчала» */
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <div id="frame" class="frame" aria-label="PFP frame (click or drop to upload)">
-      <img id="pfp" class="pfp" alt="Your PFP preview (click or drop an image)" />
-    </div>
+    <section class="stage" aria-label="Preview Stage">
+      <div class="scan"></div>
+      <canvas id="c" width="900" height="900" aria-label="PFP canvas"></canvas>
+    </section>
 
-    <input id="file" type="file" accept="image/png,image/jpeg,image/webp" />
+    <section>
+      <div class="panel">
+        <div class="title"><span class="dot"></span> Upload PFP</div>
+        <p class="muted" style="margin:8px 0 12px">PNG / JPG / WEBP — we render locally in your browser.</p>
+        <input id="photo" type="file" accept="image/png,image/jpeg,image/webp" style="display:none"/>
+        <button id="pickPhoto" class="btn primary">⬆ Select PFP File</button>
+      </div>
 
-    <div class="headline" aria-live="polite">
-      <h1>Congratulations! Your Gensyn PFP is ready!</h1>
-    </div>
+      <div class="panel">
+        <div class="title"><span class="dot"></span> Select Item</div>
+
+        <!-- Thumbnails (embedded images) -->
+        <div class="thumbs" id="thumbs">
+          <button class="thumb" data-mask="cap1" title="Cap A"><img src="items/cap-a.png" alt="Cap A"/></button>
+          <button class="thumb" data-mask="cap2" title="Cap B"><img src="items/cap-b.png" alt="Cap B"/></button>
+          <button class="thumb" data-mask="bucket" title="Bucket Hat"><img src="items/bucket-hat.png" alt="Bucket Hat"/></button>
+          <button class="thumb" data-mask="cap3" title="Cap C"><img src="items/cap-c.png" alt="Cap C"/></button>
+          <button class="thumb" data-mask="cap4" title="Cap D"><img src="items/cap-d.png" alt="Cap D"/></button>
+          <button class="thumb" data-mask="cap5" title="Cap E"><img src="items/cap-e.png" alt="Cap E"/></button>
+        </div>
+
+        <!-- Controls -->
+        <div class="row">
+          <div>
+            <label for="scale">Scale</label>
+            <input id="scale" type="range" min="0.2" max="3" value="1" step="0.01"/>
+          </div>
+          <div>
+            <label for="rotate">Rotate (°)</label>
+            <input id="rotate" type="range" min="-180" max="180" value="0" step="1"/>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="opacity">Opacity</label>
+            <input id="opacity" type="range" min="0" max="1" value="1" step="0.01"/>
+          </div>
+          <div>
+            <label for="exportSize">Export Size</label>
+            <select id="exportSize" class="input">
+              <option value="orig">Original</option>
+              <option value="512">512 × 512</option>
+              <option value="1024">1024 × 1024</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bar">
+          <button id="download" class="btn primary">⬇ Download PNG</button>
+          <button id="reset" class="btn">↻ Reset System</button>
+        </div>
+
+        <p class="muted" style="margin-top:8px">
+          Tip: drag the item on canvas. Arrows move it precisely; [ / ] rotate; - / + scale.
+        </p>
+      </div>
+    </section>
   </main>
 
   <script>
-    const input = document.getElementById('file');
-    const img   = document.getElementById('pfp');
-    const frame = document.getElementById('frame');
+    // --- DOM refs
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const photoInput = document.getElementById('photo');
+    const pickPhotoBtn = document.getElementById('pickPhoto');
+    const thumbs = document.getElementById('thumbs');
+    const scaleInput = document.getElementById('scale');
+    const rotateInput = document.getElementById('rotate');
+    const opacityInput = document.getElementById('opacity');
+    const exportSizeSel = document.getElementById('exportSize');
+    const resetBtn = document.getElementById('reset');
+    const dlBtn = document.getElementById('download');
 
-    function setImageFromFile(file){
-      if(!file) return;
-      const isImage = file.type ? file.type.startsWith('image/') : /\.(png|jpe?g|webp)$/i.test(file.name || '');
-      if(!isImage){
-        alert('Please upload an image (PNG, JPG, or WebP).');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        img.classList.remove('loaded');
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
+    pickPhotoBtn.addEventListener('click', () => photoInput.click());
+
+    // --- State
+    const state = { bgImg:null, capImg:null, cap:{x:0,y:0,w:0,h:0,scale:1,rot:0,alpha:1} };
+
+    // --- Helpers
+    function loadImageFromFile(file){
+      return new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          const img = new Image();
+          img.onload = ()=>resolve(img);
+          img.onerror = ()=>reject(new Error('decode failed'));
+          img.src = reader.result;
+        };
+        reader.onerror = ()=> reject(new Error('read failed'));
+        reader.readAsDataURL(file);
+      });
     }
 
-    img.addEventListener('load', () => img.classList.add('loaded'));
+    function fitCanvasToImage(img){
+      const MAX=1400;let w=img.naturalWidth,h=img.naturalHeight;
+      const k=Math.min(1,MAX/Math.max(w,h));
+      canvas.width=Math.round(w*k);canvas.height=Math.round(h*k);
+    }
 
-    frame.addEventListener('click', () => input.click());
-    input.addEventListener('change', () => setImageFromFile(input.files?.[0]));
+    // Items (must exist in /items/)
+    const itemPaths={
+      cap1:'items/cap-a.png',
+      cap2:'items/cap-b.png',
+      bucket:'items/bucket-hat.png',
+      cap3:'items/cap-c.png',
+      cap4:'items/cap-d.png',
+      cap5:'items/cap-e.png'
+    };
+    const presets={}; // preloaded images
+    Object.entries(itemPaths).forEach(([k,src])=>{
+      const i=new Image(); i.src=src; presets[k]=i;
+    });
 
-    ['dragenter','dragover'].forEach(ev=>{
-      frame.addEventListener(ev, e=>{
-        e.preventDefault(); e.stopPropagation();
-        frame.classList.add('hover');
-      });
+    function centerCap(imgLike){
+      const iw=imgLike.width||imgLike.naturalWidth;
+      const ih=imgLike.height||imgLike.naturalHeight;
+      state.cap.w=iw; state.cap.h=ih;
+      state.cap.scale=Math.min(1,canvas.width/iw*0.5);
+      state.cap.rot=0;
+      state.cap.x=canvas.width/2-(iw*state.cap.scale)/2;
+      state.cap.y=canvas.height*0.2;
+      scaleInput.value=String(state.cap.scale);
+      rotateInput.value=String(state.cap.rot);
+    }
+
+    function render(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // background
+      if(state.bgImg){ ctx.drawImage(state.bgImg,0,0,canvas.width,canvas.height); }
+      else { ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+
+      // item
+      if (state.capImg) {
+        const {x,y,w,h,scale,rot,alpha}=state.cap;
+        const cw=w*scale, ch=h*scale;
+        const cx=x+cw/2, cy=y+ch/2;
+        ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot*Math.PI/180);
+        ctx.globalAlpha=alpha;
+        ctx.drawImage(state.capImg,-cw/2,-ch/2,cw,ch);
+        ctx.restore(); ctx.globalAlpha=1;
+      }
+    }
+
+    // --- Dragging
+    let dragging=false; let dragOff={x:0,y:0};
+    function hitCap(mx,my){
+      if(!state.capImg) return false;
+      const {x,y,w,h,scale,rot}=state.cap;
+      const cw=w*scale, ch=h*scale; const cx=x+cw/2, cy=y+ch/2;
+      const dx=mx-cx, dy=my-cy; const ang=-rot*Math.PI/180;
+      const rx=dx*Math.cos(ang)-dy*Math.sin(ang);
+      const ry=dx*Math.sin(ang)+dy*Math.cos(ang);
+      return (rx>=-cw/2 && rx<=cw/2 && ry>=-ch/2 && ry<=ch/2);
+    }
+    canvas.addEventListener('mousedown',e=>{
+      const r=canvas.getBoundingClientRect();
+      const mx=(e.clientX-r.left)*(canvas.width/r.width);
+      const my=(e.clientY-r.top)*(canvas.height/r.height);
+      if(hitCap(mx,my)){ dragging=true; dragOff.x=mx-state.cap.x; dragOff.y=my-state.cap.y; }
     });
-    ['dragleave','drop'].forEach(ev=>{
-      frame.addEventListener(ev, e=>{
-        e.preventDefault(); e.stopPropagation();
-        frame.classList.remove('hover');
-      });
+    window.addEventListener('mousemove',e=>{
+      if(!dragging) return;
+      const r=canvas.getBoundingClientRect();
+      const mx=(e.clientX-r.left)*(canvas.width/r.width);
+      const my=(e.clientY-r.top)*(canvas.height/r.height);
+      state.cap.x=mx-dragOff.x; state.cap.y=my-dragOff.y; render();
     });
-    frame.addEventListener('drop', e=>{
-      const file = e.dataTransfer?.files?.[0];
-      setImageFromFile(file);
+    window.addEventListener('mouseup',()=> dragging=false);
+
+    // --- Controls
+    scaleInput.addEventListener('input',()=>{ state.cap.scale=parseFloat(scaleInput.value||'1'); render(); });
+    rotateInput.addEventListener('input',()=>{ state.cap.rot=parseFloat(rotateInput.value||'0'); render(); });
+    opacityInput.addEventListener('input',()=>{ state.cap.alpha=parseFloat(opacityInput.value||'1'); render(); });
+
+    // --- Reset
+    resetBtn.addEventListener('click', ()=>{
+      state.capImg = null;
+      document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));
+      render();
     });
+
+    // --- Download (supports export size)
+    dlBtn.addEventListener('click',()=>{
+      const opt=exportSizeSel.value;
+      if(opt==='orig'){
+        const link=document.createElement('a');
+        link.download='pfp.png';
+        link.href=canvas.toDataURL('image/png');
+        link.click(); return;
+      }
+      const size=parseInt(opt,10);
+      const off=document.createElement('canvas'); off.width=size; off.height=size;
+      const g=off.getContext('2d');
+
+      if(state.bgImg){ g.drawImage(state.bgImg,0,0,size,size); } else { g.fillStyle='#0a0a0a'; g.fillRect(0,0,size,size); }
+
+      if (state.capImg) {
+        const kx=size/canvas.width, ky=size/canvas.height, k=Math.min(kx,ky);
+        const {x,y,w,h,scale,rot,alpha}=state.cap;
+        const cw=w*scale*k, ch=h*scale*k;
+        const cx=(x*k)+cw/2, cy=(y*k)+ch/2;
+        g.save(); g.translate(cx,cy); g.rotate(rot*Math.PI/180); g.globalAlpha=alpha;
+        g.drawImage(state.capImg, -cw/2, -ch/2, cw, ch);
+        g.restore(); g.globalAlpha=1;
+      }
+
+      const link=document.createElement('a');
+      link.download='pfp.png';
+      link.href=off.toDataURL('image/png');
+      link.click();
+    });
+
+    // --- Upload PFP
+    pickPhotoBtn.addEventListener('click', () => photoInput.click());
+    photoInput.addEventListener('change', async ()=>{
+      const f=photoInput.files?.[0]; if(!f) return;
+      try{
+        const img=await loadImageFromFile(f);
+        state.bgImg=img; fitCanvasToImage(img); render();
+      }catch(e){ alert('Unsupported image format. Please upload PNG, JPG, or WebP.'); }
+    });
+
+    // --- Select item (from embedded thumbs)
+    thumbs.addEventListener('click',e=>{
+      const box=e.target.closest('.thumb'); if(!box) return;
+      const key=box.getAttribute('data-mask'); if(!key) return;
+      state.capImg = presets[key];
+      centerCap(state.capImg);
+      document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));
+      box.classList.add('active');
+      render();
+    });
+
+    // --- Keyboard helpers
+    window.addEventListener('keydown',e=>{
+      const step=e.shiftKey?10:2; let changed=true;
+      if(e.key==='ArrowLeft') state.cap.x-=step;
+      else if(e.key==='ArrowRight') state.cap.x+=step;
+      else if(e.key==='ArrowUp') state.cap.y-=step;
+      else if(e.key==='ArrowDown') state.cap.y+=step;
+      else if(e.key===']') state.cap.rot+=1;
+      else if(e.key==='[') state.cap.rot-=1;
+      else if(e.key==='+'){ state.cap.scale=Math.min(3,state.cap.scale+0.02); scaleInput.value=state.cap.scale; }
+      else if(e.key==='-'){ state.cap.scale=Math.max(0.2,state.cap.scale-0.02); scaleInput.value=state.cap.scale; }
+      else changed=false;
+      if(changed){ e.preventDefault(); render(); }
+    });
+
+    // Initial render
+    render();
   </script>
 </body>
 </html>
