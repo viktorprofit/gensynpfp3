@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gensyn PFP — Ready</title>
+  <style>
+    :root{
+      --deep-brown:#230800;   /* background color from your palette */
+      --accent:#fad7d1;       /* primary pink for glow */
+      --text:#ffffff;
+      --muted:#e9d9d6;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--deep-brown);
+      color:var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      display:grid;
+      place-items:center;
+    }
+
+    /* Layout */
+    .wrap{
+      width:100%;
+      max-width:720px;
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      text-align:center;
+    }
+
+    /* Frame with glow */
+    .frame{
+      width:min(90vw, 480px);
+      aspect-ratio:1/1;
+      border-radius:16px;
+      background: #120400; /* a darker brown inset to pop the image */
+      border:2px solid rgba(250,215,209,.45);
+      box-shadow:
+        0 0 0 3px rgba(250,215,209,.15) inset,
+        0 14px 40px rgba(0,0,0,.35),
+        0 0 28px rgba(250,215,209,.28);
+      padding:12px;
+      position:relative;
+      display:grid;
+      place-items:center;
+    }
+
+    /* The image itself */
+    .pfp{
+      width:100%;
+      height:100%;
+      border-radius:12px;
+      object-fit:cover;
+      display:block;
+      background:
+        linear-gradient(180deg, #1b0700, #0f0300);
+      border:1px dashed rgba(250,215,209,.35);
+    }
+
+    /* Hidden file input + nice button */
+    input[type="file"]{ display:none }
+
+    .btn{
+      appearance:none;
+      background: #381103;
+      color: var(--text);
+      border: 1px solid rgba(250,215,209,.35);
+      padding: 14px 18px;
+      border-radius:12px;
+      font-weight: 700;
+      letter-spacing:.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      width: 100%;
+      max-width: 320px;
+      transition: filter .25s ease, box-shadow .25s ease, background .25s ease;
+    }
+    .btn:hover{
+      background:#421307;
+      filter: brightness(1.03);
+      box-shadow: 0 8px 24px rgba(250,215,209,.2), 0 0 0 1px rgba(250,215,209,.22) inset;
+    }
+
+    h1{
+      margin:10px 0 0;
+      font-size: clamp(22px, 3.2vw, 28px);
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+    p.note{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    /* Drag & drop helper */
+    .frame.drag{
+      border-color: var(--accent);
+      box-shadow:
+        0 0 0 3px rgba(250,215,209,.25) inset,
+        0 0 22px rgba(250,215,209,.35);
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div id="frame" class="frame" aria-label="PFP frame (drop or upload)">
+      <img id="pfp" class="pfp" alt="Your PFP preview (drop or upload an image)" />
+    </div>
+
+    <input id="file" type="file" accept="image/png,image/jpeg,image/webp" />
+    <label for="file" class="btn">⬆ Upload PFP</label>
+
+    <h1>Congratulations! Your Gensyn PFP is ready!</h1>
+    <p class="note">PNG / JPG / WEBP • Rendered locally in your browser</p>
+  </main>
+
+  <script>
+    const input = document.getElementById('file');
+    const img   = document.getElementById('pfp');
+    const frame = document.getElementById('frame');
+
+    function setImageFromFile(file){
+      if(!file) return;
+      const ok = /image\\/(png|jpe?g|webp)/i.test(file.type);
+      if(!ok){ alert('Please upload a PNG, JPG, or WebP image.'); return; }
+      const reader = new FileReader();
+      reader.onload = () => { img.src = reader.result; };
+      reader.readAsDataURL(file);
+    }
+
+    input.addEventListener('change', () => {
+      setImageFromFile(input.files?.[0]);
+    });
+
+    // Drag & drop
+    ;['dragenter','dragover'].forEach(ev=>{
+      frame.addEventListener(ev, e=>{
+        e.preventDefault(); e.stopPropagation();
+        frame.classList.add('drag');
+      });
+    });
+    ;['dragleave','drop'].forEach(ev=>{
+      frame.addEventListener(ev, e=>{
+        e.preventDefault(); e.stopPropagation();
+        frame.classList.remove('drag');
+      });
+    });
+    frame.addEventListener('drop', e=>{
+      const file = e.dataTransfer?.files?.[0];
+      setImageFromFile(file);
+    });
+
+    // Optional: placeholder pattern if no image yet (solid gradient already set via CSS)
+    // You can set a default: img.src = 'items/some-default.png';
+  </script>
+</body>
+</html>
